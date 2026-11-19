@@ -117,7 +117,7 @@ async function establishSession(user) {
     await db.auth.signOut();
     showMessage(loginMessage, error
       ? `Não foi possível validar o acesso: ${error.message}`
-      : "Esta conta ainda não tem acesso ao painel. Peça ao administrador para associá-la em uniao_membros.", true);
+      : "Esta conta ainda não tem acesso ao painel. Solicite ao administrador.", true);
     return;
   }
 
@@ -520,10 +520,11 @@ function createTable(headers, rows) {
 
 async function loadSettings() {
   if (!isAdmin()) return;
-  const [serviceResult, barberResult, hoursResult] = await Promise.all([
+  const [serviceResult, barberResult, hoursResult, emailsResult] = await Promise.all([
     db.from("uniao_servicos").select("*").order("nome"),
     db.from("uniao_barbeiros").select("*").order("nome"),
-    db.from("uniao_horarios").select("*").order("barbeiro_id").order("dia_semana")
+    db.from("uniao_horarios").select("*").order("barbeiro_id").order("dia_semana"),
+    db.rpc("uniao_listar_emails_membros")
   ]);
   const failure = serviceResult.error || barberResult.error || hoursResult.error;
   if (failure) {
@@ -533,6 +534,9 @@ async function loadSettings() {
 
   services = serviceResult.data || [];
   barbers = barberResult.data || [];
+  const memberEmails = new Map(
+    (emailsResult.data || []).map((item) => [item.barbeiro_id, item.email])
+  );
   populateBarberControls();
   renderManualServices();
 
@@ -555,11 +559,17 @@ async function loadSettings() {
     button.className = "small-button";
     button.dataset.toggleBarber = barber.id;
     button.textContent = barber.ativo ? "Desativar" : "Ativar";
-    return [barber.nome, barber.telefone || "—", barber.ativo ? "Ativo" : "Inativo", button];
+    return [
+      barber.nome,
+      memberEmails.get(barber.id) || "—",
+      barber.telefone || "—",
+      barber.ativo ? "Ativo" : "Inativo",
+      button
+    ];
   });
   const barberTable = document.getElementById("barber-settings-list");
   barberTable.replaceChildren(barberRows.length
-    ? createTable(["Barbeiro", "Telefone", "Status", "Ação"], barberRows)
+    ? createTable(["Barbeiro", "E-mail de acesso", "Telefone", "Status", "Ação"], barberRows)
     : createEmpty("Nenhum barbeiro cadastrado."));
 
   const dayNames = ["", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"];
@@ -764,19 +774,72 @@ document.getElementById("service-form").addEventListener("submit", async (event)
 
 document.getElementById("barber-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const barber = {
-    nome: document.getElementById("barber-name").value.trim(),
-    telefone: document.getElementById("barber-phone").value.trim() || null
-  };
-  const { error } = await db.from("uniao_barbeiros").insert(barber);
-  if (error) {
-    showMessage(panelMessage, `Não foi possível cadastrar o barbeiro: ${error.message}`, true);
+  clearMessage(panelMessage);
+
+  const name = document.getElementById("barber-name").value.trim();
+  const phone = document.getElementById("barber-phone").value.trim() || null;
+  const email = document.getElementById("barber-email").value.trim().toLowerCase();
+  const password = document.getElementById("barber-password").value;
+  const submitBtn = document.getElementById("barber-submit");
+
+  if (password.length < 6) {
+    showMessage(panelMessage, "A senha do barbeiro deve ter pelo menos 6 caracteres.", true);
     return;
   }
-  event.target.reset();
-  showMessage(panelMessage, "Barbeiro cadastrado. Crie e associe a conta dele ao painel conforme as instruções do SQL.", false);
-  await loadSettings();
-  await loadDashboard();
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Cadastrando...";
+
+  try {
+    const { data: createdBarber, error: barberError } = await db
+      .from("uniao_barbeiros")
+      .insert({ nome: name, telefone: phone })
+      .select("id")
+      .single();
+
+    if (barberError) {
+      throw new Error(`Não foi possível cadastrar o barbeiro: ${barberError.message}`);
+    }
+
+    // Cliente isolado para criar o usuário sem encerrar a sessão atual do administrador
+    const tempClient = window.supabase.createClient(
+      window.UNIAO_SUPABASE_CONFIG.url,
+      window.UNIAO_SUPABASE_CONFIG.anonKey,
+      { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } }
+    );
+
+    const { data: signUpData, error: signUpError } = await tempClient.auth.signUp({
+      email,
+      password,
+      options: { data: { nome: name } }
+    });
+
+    if (signUpError || !signUpData.user) {
+      await db.from("uniao_barbeiros").delete().eq("id", createdBarber.id);
+      throw new Error(`Erro ao criar o login do barbeiro: ${signUpError ? signUpError.message : "e-mail já em uso"}`);
+    }
+
+    const { error: linkError } = await db.rpc("uniao_vincular_barbeiro_auth", {
+      p_user_id: signUpData.user.id,
+      p_barbeiro_id: createdBarber.id,
+      p_is_admin: false
+    });
+
+    if (linkError) {
+      await db.from("uniao_barbeiros").delete().eq("id", createdBarber.id);
+      throw new Error(`Erro ao liberar permissão do barbeiro: ${linkError.message}`);
+    }
+
+    event.target.reset();
+    showMessage(panelMessage, `Barbeiro ${name} cadastrado! Ele já pode entrar no painel usando ${email}.`, false);
+    await loadSettings();
+    await loadDashboard();
+  } catch (err) {
+    showMessage(panelMessage, err.message, true);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Cadastrar barbeiro e criar acesso";
+  }
 });
 
 document.getElementById("hours-form").addEventListener("submit", async (event) => {
