@@ -20,7 +20,7 @@
           <span class="brand-name">Barbearia União<span class="brand-sub">Painel da equipe</span></span>
         </a>
         <h1>Acesso seguro</h1>
-        <p>Entre com o usuário criado no Supabase Authentication.</p>
+        <p>Entre com seu e-mail e senha de acesso.</p>
         <div id="login-message" class="notice error" role="status" hidden></div>
         <div class="field">
           <label for="login-email">E-mail</label>
@@ -186,7 +186,8 @@
         </div>
 
         <div class="panel-section panel-card">
-          <h2>Barbeiros</h2>
+          <h2>Barbeiros e acessos</h2>
+          <p>Cadastre o barbeiro já com o e-mail e a senha que ele usará para acessar a própria agenda no painel.</p>
           <form id="barber-form" class="form-grid">
             <div class="field">
               <label for="barber-name">Nome</label>
@@ -196,12 +197,19 @@
               <label for="barber-phone">Telefone</label>
               <input id="barber-phone" class="panel-input" type="tel" maxlength="24">
             </div>
-            <div class="field" style="justify-content:end;">
-              <button class="button" type="submit">Adicionar barbeiro</button>
+            <div class="field">
+              <label for="barber-email">E-mail de acesso</label>
+              <input id="barber-email" class="panel-input" type="email" autocomplete="off" required>
+            </div>
+            <div class="field">
+              <label for="barber-password">Senha de acesso (mín. 6 caracteres)</label>
+              <input id="barber-password" class="panel-input" type="password" minlength="6" autocomplete="new-password" required>
+            </div>
+            <div class="field full">
+              <button id="barber-submit" class="button" type="submit">Cadastrar barbeiro e criar acesso</button>
             </div>
           </form>
           <div id="barber-settings-list" class="table-wrap panel-section"></div>
-          <p style="margin:12px 0 0; font-size:.78rem;">Para liberar o painel de outro barbeiro, crie a conta dele no Supabase Authentication e associe-a em <code>uniao_membros</code>, conforme o SQL.</p>
         </div>
 
         <div class="panel-section panel-card">
