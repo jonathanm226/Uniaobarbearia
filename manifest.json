@@ -1,0 +1,8 @@
+{
+  "name": "Barbearia União",
+  "short_name": "União",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#111713",
+  "theme_color": "#111713"
+}

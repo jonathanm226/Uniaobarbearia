@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111713">
+  <meta name="description" content="Barbearia União em Cachoeira, Betim. Agende seu horário com Warlei Fernandes.">
+  <title>Barbearia União | Warlei Fernandes</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#inicio" aria-label="Barbearia União, início">
+        <span class="brand-mark" aria-hidden="true">⚜</span>
+        <span class="brand-name">Barbearia União<span class="brand-sub">Warlei Fernandes</span></span>
+      </a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Abrir menu">
+        <span aria-hidden="true">☰</span> Menu
+      </button>
+      <nav class="main-nav" id="main-nav" aria-label="Navegação principal">
+        <a href="#servicos">Serviços</a>
+        <a href="#localizacao">Localização</a>
+        <a href="painel.html">Acesso da equipe</a>
+        <a class="button" href="agendar.html">Agendar horário</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <span class="eyebrow">⚜ Barbearia União · Betim, MG</span>
+          <h1>Tradição no corte.<br><em>União no estilo.</em></h1>
+          <p>Seu próximo corte começa com um bom atendimento. Escolha o serviço, encontre um horário disponível e agende com Warlei Fernandes.</p>
+          <div class="hero-actions">
+            <a class="button" href="agendar.html">Agendar meu horário <span aria-hidden="true">→</span></a>
+          </div>
+          <a class="hero-contact" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Amazonas%2C+2876+-+Cachoeira%2C+Betim+-+MG%2C+32603-024" target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">⌖</span> Av. Amazonas, 2876 · Cachoeira, Betim
+          </a>
+        </div>
+        <div class="hero-art" aria-label="Símbolo da Barbearia União">
+          <div class="crest">
+            <span class="crest-symbol" aria-hidden="true">⚜</span>
+            <span class="crest-name">Barbearia União</span>
+          </div>
+          <div class="hero-stamp"><span>Barbeiro</span>Warlei Fernandes</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="servicos">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Cuidado no detalhe</span>
+          <h2>Serviços da barbearia</h2>
+          <p>Veja os serviços disponíveis e escolha o que combina com você. Valores e duração são atualizados pela equipe.</p>
+        </div>
+        <div id="service-list" class="services-grid" aria-live="polite">
+          <p class="notice service-empty">Carregando serviços...</p>
+        </div>
+        <div id="site-notice" class="notice error" role="status" hidden></div>
+        <div style="margin-top: 24px;">
+          <a class="button" href="agendar.html">Escolher horário</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section story">
+      <div class="container story-grid">
+        <div class="story-mark" aria-hidden="true">⚜</div>
+        <div>
+          <span class="eyebrow">Barbearia União</span>
+          <h2>Seu estilo, seu momento.</h2>
+          <p>Um espaço para cuidar do visual com atenção e tranquilidade. A equipe da Barbearia União recebe você na região de Cachoeira, em Betim.</p>
+          <p><strong style="color:#272a23;">Barbeiro:</strong> Warlei Fernandes</p>
+          <a class="button" href="agendar.html">Reserve seu horário</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="localizacao">
+      <div class="container location">
+        <div class="location-info">
+          <span class="eyebrow">Como chegar</span>
+          <h2>Estamos em Betim</h2>
+          <p>Consulte o mapa ou entre em contato para confirmar os detalhes da sua visita.</p>
+          <div class="location-line">
+            <i aria-hidden="true">⌖</i>
+            <div><strong>Endereço</strong>Av. Amazonas, 2876 - Cachoeira<br>Betim - MG, 32603-024</div>
+          </div>
+          <div class="location-line">
+            <i aria-hidden="true">☎</i>
+            <div><strong>Telefone</strong><a href="tel:+553175473648">+55 (31) 7547-3648</a></div>
+          </div>
+          <div style="margin-top: 24px;">
+            <a class="button button-outline" href="https://www.google.com/maps/search/?api=1&amp;query=Av.+Amazonas%2C+2876+-+Cachoeira%2C+Betim+-+MG%2C+32603-024" target="_blank" rel="noopener noreferrer">Abrir no Google Maps</a>
+          </div>
+        </div>
+        <div class="map-frame">
+          <iframe
+            title="Mapa da Barbearia União em Cachoeira, Betim"
+            src="https://www.google.com/maps?q=Av.%20Amazonas%2C%202876%20-%20Cachoeira%2C%20Betim%20-%20MG%2C%2032603-024&amp;output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="container">
+        <span class="eyebrow" style="color:#393629;">Atendimento com hora marcada</span>
+        <h2>O próximo horário pode ser seu.</h2>
+        <p>Escolha o serviço e consulte a agenda online.</p>
+        <a class="button" href="agendar.html">Agendar agora</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>© 2026 Barbearia União · Warlei Fernandes</span>
+      <a href="tel:+553175473648">+55 (31) 7547-3648</a>
+      <a href="painel.html">Acesso da equipe</a>
+    </div>
+  </footer>
+
+  <script src="site.js"></script>
+</body>
+</html>
